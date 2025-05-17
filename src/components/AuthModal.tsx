@@ -14,7 +14,12 @@ interface AuthModalProps {
 
 const AuthModal = ({ onClose, position }: AuthModalProps) => {
   const [tab, setTab] = useState<'signup' | 'signin' | 'forgot-password'>('signup');
-  const [signupData, setSignupData] = useState({ email: '', password: '', confirmPassword: '' });
+  const [signupData, setSignupData] = useState({ 
+    email: '', 
+    password: '', 
+    confirmPassword: '',
+    username: '' 
+  });
   const [signinData, setSigninData] = useState({ email: '', password: '' });
   const [resetEmail, setResetEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -36,7 +41,7 @@ const AuthModal = ({ onClose, position }: AuthModalProps) => {
 
     setLoading(true);
     try {
-      await signUp(signupData.email, signupData.password);
+      await signUp(signupData.email, signupData.password, signupData.username);
       toast({
         title: "Success",
         description: "Account created! Please check your email for confirmation."
@@ -163,6 +168,17 @@ const AuthModal = ({ onClose, position }: AuthModalProps) => {
 
         {tab === 'signup' && (
           <form onSubmit={handleSignup} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="signup-username">Username</Label>
+              <Input
+                id="signup-username"
+                type="text"
+                placeholder="Choose a username"
+                value={signupData.username}
+                onChange={e => setSignupData({ ...signupData, username: e.target.value })}
+                required
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="signup-email">Email</Label>
               <Input

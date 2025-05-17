@@ -72,7 +72,7 @@ const Profile = () => {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Profile</h1>
+      <h1 className="text-2xl font-bold mb-6 text-white">Profile</h1>
 
       <div className="bg-white rounded-lg shadow p-6">
         <div className="flex items-center space-x-4 mb-6">

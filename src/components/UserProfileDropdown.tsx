@@ -82,11 +82,11 @@ const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ size = 32 }) 
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-          <div className="px-4 py-2 border-b">
-            <p className="text-sm font-medium text-gray-900">{currentUser?.email}</p>
+        <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50">
+          <div className="px-4 py-2 border-b border-gray-700">
+            <p className="text-sm font-medium text-white">{currentUser?.email}</p>
             {currentUser?.user_metadata?.display_name && (
-              <p className="text-xs text-gray-500">{currentUser.user_metadata.display_name}</p>
+              <p className="text-xs text-white/70">{currentUser.user_metadata.display_name}</p>
             )}
           </div>
           
@@ -95,7 +95,7 @@ const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ size = 32 }) 
               navigate('/profile');
               setIsOpen(false);
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+            className="w-full px-4 py-2 text-left text-sm text-white hover:bg-gray-700 flex items-center"
           >
             <User className="w-4 h-4 mr-2" />
             Profile
@@ -106,7 +106,7 @@ const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ size = 32 }) 
               navigate('/settings');
               setIsOpen(false);
             }}
-            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+            className="w-full px-4 py-2 text-left text-sm text-white hover:bg-gray-700 flex items-center"
           >
             <Settings className="w-4 h-4 mr-2" />
             Settings
@@ -114,7 +114,7 @@ const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ size = 32 }) 
 
           <button
             onClick={handleSignOut}
-            className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-gray-100 flex items-center"
+            className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-gray-700 flex items-center"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sign Out
