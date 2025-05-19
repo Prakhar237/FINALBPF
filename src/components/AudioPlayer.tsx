@@ -43,7 +43,7 @@ const AudioPlayer = () => {
     <div className="px-4">
       <audio
         ref={audioRef}
-        src="/Zen.mp3"
+        src="/zen1.mp3"
         loop
         preload="auto"
         muted={true}
