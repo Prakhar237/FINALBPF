@@ -27,7 +27,7 @@ function App() {
           <AuthProvider>
             <Router>
               <div className="min-h-screen bg-cover bg-center bg-fixed" style={{ 
-                backgroundImage: `url('https://media-hosting.imagekit.io/30986410b8734cba/Untitled%20design%20(84).png?Expires=1839570451&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=yfnLcQ5CBUyuXRRJBEtM14gmpYIZ0k-97~BnQNLsJi8poRyHTk-ffxY6RTJLblG93oSq~1C9lGhI5mI-BdRSjjrX49Bj2kIjaw5~vRuioGENdfURZd8clgnohLIlBEGLuDomCD2WjU~OUSlVAn-8hdr2DMKOMTS-~spzwiytqalvfsmp7zrQyujWStI-AUOcgfhbxLuaAyPov4h9u6GSSmzGoTEakpZeqiaq19h8xTAGr5aVqTS9OhIevcYf1av8vD92N6NJIUYtAoosymXBGTmA6hgYRCWhM8OOzxU-x3NKxGkMGX2lZFxk3fkiA9HzU0ZZturPVcaFttf1VXn2AA__')`,
+                backgroundImage: `url('https://i.ibb.co/WNn7rLBh/mainbg.png')`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 backgroundAttachment: 'fixed'
