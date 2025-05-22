@@ -1,301 +1,233 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import ProfilePictureUpload from './ProfilePictureUpload';
+import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from 'react-router-dom';
+
+const translations = {
+  en: {
+    signIn: "Sign In",
+    signUp: "Sign Up",
+    email: "Email",
+    password: "Password",
+    confirmPassword: "Confirm Password",
+    forgotPassword: "Forgot Password?",
+    noAccount: "Don't have an account?",
+    haveAccount: "Already have an account?",
+    close: "Close"
+  },
+  es: {
+    signIn: "Iniciar Sesión",
+    signUp: "Registrarse",
+    email: "Correo Electrónico",
+    password: "Contraseña",
+    confirmPassword: "Confirmar Contraseña",
+    forgotPassword: "¿Olvidaste tu contraseña?",
+    noAccount: "¿No tienes una cuenta?",
+    haveAccount: "¿Ya tienes una cuenta?",
+    close: "Cerrar"
+  },
+  fr: {
+    signIn: "Se Connecter",
+    signUp: "S'inscrire",
+    email: "E-mail",
+    password: "Mot de passe",
+    confirmPassword: "Confirmer le mot de passe",
+    forgotPassword: "Mot de passe oublié ?",
+    noAccount: "Pas de compte ?",
+    haveAccount: "Déjà un compte ?",
+    close: "Fermer"
+  }
+};
 
 interface AuthModalProps {
   onClose: () => void;
   position?: { top: number; left: number };
 }
 
-const AuthModal = ({ onClose, position }: AuthModalProps) => {
-  const [tab, setTab] = useState<'signup' | 'signin' | 'forgot-password'>('signup');
-  const [signupData, setSignupData] = useState({ 
-    email: '', 
-    password: '', 
-    confirmPassword: '',
-    username: '' 
-  });
-  const [signinData, setSigninData] = useState({ email: '', password: '' });
-  const [resetEmail, setResetEmail] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showProfileUpload, setShowProfileUpload] = useState(false);
-  const navigate = useNavigate();
-  const { signIn, signUp, resetPassword, sendEmailConfirmation } = useAuth();
+const AuthModal: React.FC<AuthModalProps> = ({ onClose, position }) => {
+  const { language } = useLanguage();
+  const t = translations[language as keyof typeof translations] || translations.en;
+  const { signIn, signUp } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const isMobile = window.innerWidth <= 768;
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (signupData.password !== signupData.confirmPassword) {
+    setLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+    const username = formData.get('username') as string;
+
+    if (!isSignIn && password !== confirmPassword) {
       toast({
         title: "Error",
         description: "Passwords do not match",
-        variant: "destructive"
+        variant: "destructive",
       });
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
     try {
-      await signUp(signupData.email, signupData.password, signupData.username);
-      toast({
-        title: "Success",
-        description: "Account created! Please check your email for confirmation."
-      });
-      setShowProfileUpload(true);
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to create account",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSignin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await signIn(signinData.email, signinData.password);
-      toast({
-        title: "Success",
-        description: "Signed in successfully!"
-      });
-      onClose();
-      navigate('/');
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to sign in",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await resetPassword(resetEmail);
-      toast({
-        title: "Success",
-        description: "Password reset instructions have been sent to your email."
-      });
-      setTab('signin');
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to send reset instructions",
-        variant: "destructive"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendConfirmation = async () => {
-    try {
-      await sendEmailConfirmation();
-      toast({
-        title: "Success",
-        description: "Confirmation email has been resent."
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to resend confirmation email",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const modalStyle = position
-    ? {
-        position: 'absolute' as const,
-        top: position.top,
-        left: position.left,
-        zIndex: 1000,
-        transform: 'translate(-50%, 0)',
+      if (isSignIn) {
+        await signIn(email, password);
+        toast({
+          title: "Success",
+          description: "Signed in successfully",
+        });
+      } else {
+        await signUp(email, password, username);
+        toast({
+          title: "Success",
+          description: "Account created successfully",
+        });
       }
-    : {};
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Authentication failed",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (showProfileUpload) {
-    return (
-      <ProfilePictureUpload
-        onUploadComplete={() => {
-          setShowProfileUpload(false);
-          onClose();
-          navigate('/');
-        }}
-      />
-    );
-  }
+  const handleForgotPassword = () => {
+    onClose();
+    navigate('/auth/reset-password');
+  };
+
+  const modalStyle: React.CSSProperties = {
+    position: isMobile ? 'fixed' : 'absolute',
+    top: isMobile ? '0' : position?.top ? `${position.top}px` : '50%',
+    left: isMobile ? '0' : position?.left ? `${position.left}px` : '50%',
+    transform: isMobile ? 'none' : 'translate(-50%, -50%)',
+    width: isMobile ? '100%' : 'auto',
+    maxWidth: '400px',
+    zIndex: 1000,
+    backgroundColor: 'white',
+    padding: '1.5rem',
+    borderRadius: isMobile ? '0' : '0.5rem',
+    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-      <div
-        className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative"
-        style={modalStyle}
-      >
-        <button
-          className="absolute top-2 right-3 text-gray-500 hover:text-black text-xl"
-          onClick={onClose}
-        >
-          ×
-        </button>
-        <div className="flex mb-6 border-b">
-          <button
-            className={`flex-1 py-2 text-lg font-medium ${tab === 'signup' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
-            onClick={() => setTab('signup')}
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50">
+      <div style={modalStyle} className="bg-white">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isSignIn ? t.signIn : t.signUp}
+          </h2>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
           >
-            Sign Up
-          </button>
-          <button
-            className={`flex-1 py-2 text-lg font-medium ${tab === 'signin' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
-            onClick={() => setTab('signin')}
-          >
-            Sign In
-          </button>
+            <X className="h-5 w-5" />
+          </Button>
         </div>
 
-        {tab === 'signup' && (
-          <form onSubmit={handleSignup} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="signup-username">Username</Label>
-              <Input
-                id="signup-username"
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {!isSignIn && (
+            <div>
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                Username
+              </label>
+              <input
                 type="text"
-                placeholder="Choose a username"
-                value={signupData.username}
-                onChange={e => setSignupData({ ...signupData, username: e.target.value })}
+                id="username"
+                name="username"
                 required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="signup-email">Email</Label>
-              <Input
-                id="signup-email"
-                type="email"
-                placeholder="Enter your email"
-                value={signupData.email}
-                onChange={e => setSignupData({ ...signupData, email: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="signup-password">Password</Label>
-              <Input
-                id="signup-password"
-                type="password"
-                placeholder="Create a password"
-                value={signupData.password}
-                onChange={e => setSignupData({ ...signupData, password: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="signup-confirm-password">Confirm Password</Label>
-              <Input
-                id="signup-confirm-password"
-                type="password"
-                placeholder="Confirm your password"
-                value={signupData.confirmPassword}
-                onChange={e => setSignupData({ ...signupData, confirmPassword: e.target.value })}
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? 'Creating Account...' : 'Create Account'}
-            </Button>
-          </form>
-        )}
+          )}
 
-        {tab === 'signin' && (
-          <form onSubmit={handleSignin} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="signin-email">Email</Label>
-              <Input
-                id="signin-email"
-                type="email"
-                placeholder="Enter your email"
-                value={signinData.email}
-                onChange={e => setSigninData({ ...signinData, email: e.target.value })}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="signin-password">Password</Label>
-              <Input
-                id="signin-password"
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              {t.email}
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              {t.password}
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            />
+          </div>
+
+          {!isSignIn && (
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                {t.confirmPassword}
+              </label>
+              <input
                 type="password"
-                placeholder="Enter your password"
-                value={signinData.password}
-                onChange={e => setSigninData({ ...signinData, password: e.target.value })}
+                id="confirmPassword"
+                name="confirmPassword"
                 required
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? 'Signing In...' : 'Sign In'}
-            </Button>
-            <div className="text-center">
+          )}
+
+          {isSignIn && (
+            <div className="flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setTab('forgot-password')}
-                className="text-sm text-blue-600 hover:text-blue-800"
+                onClick={handleForgotPassword}
+                className="text-sm text-blue-600 hover:text-blue-500"
               >
-                Forgot Password?
+                {t.forgotPassword}
               </button>
             </div>
-          </form>
-        )}
+          )}
 
-        {tab === 'forgot-password' && (
-          <form onSubmit={handleForgotPassword} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="reset-email">Email</Label>
-              <Input
-                id="reset-email"
-                type="email"
-                placeholder="Enter your email"
-                value={resetEmail}
-                onChange={e => setResetEmail(e.target.value)}
-                required
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full"
+          <Button 
+            type="submit" 
+            className="w-full bg-blue-600 text-white hover:bg-blue-700"
+            disabled={loading}
+          >
+            {loading ? 'Please wait...' : (isSignIn ? t.signIn : t.signUp)}
+          </Button>
+
+          <div className="text-center text-sm">
+            <span className="text-gray-600">
+              {isSignIn ? t.noAccount : t.haveAccount}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsSignIn(!isSignIn)}
+              className="ml-1 text-blue-600 hover:text-blue-500"
             >
-              {loading ? 'Sending Reset Instructions...' : 'Send Reset Instructions'}
-            </Button>
-            <div className="text-center">
-              <button
-                type="button"
-                onClick={() => setTab('signin')}
-                className="text-sm text-blue-600 hover:text-blue-800"
-              >
-                Back to Sign In
-              </button>
-            </div>
-          </form>
-        )}
+              {isSignIn ? t.signUp : t.signIn}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
