@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import SpeakButton from './SpeakButton';
 import html2canvas from 'html2canvas';
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface VerseCardProps {
   verse: string;
@@ -19,6 +20,7 @@ interface VerseCardProps {
 const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBookmark, bookmarkDisabled }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const hasSeparator = verse.includes(':');
   let reference = '';
@@ -155,7 +157,7 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBoo
           )}
           <p className="font-montserrat font-bold text-white/90 leading-relaxed text-base mb-4">{text}</p>
           
-          <div className="flex justify-end gap-2 mt-auto">
+          <div className="flex flex-wrap justify-end gap-2 mt-auto">
             <Button
               variant="ghost"
               size="sm"
@@ -166,7 +168,7 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBoo
               <Download size={16} />
             </Button>
             
-            <div className="flex gap-2">
+            <div className={`flex ${isMobile ? 'flex-wrap' : ''} gap-2`}>
               <Button
                 variant="ghost"
                 size="sm"

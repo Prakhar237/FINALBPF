@@ -71,76 +71,78 @@ const Navigation = () => {
           isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >
-        <div className="flex flex-col items-center justify-center h-full gap-6">
-          {navLinks.map((link, index) => (
-            <div key={index} className="flex flex-col items-center">
-              {link.to ? (
-                <Link
-                  to={link.to}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`text-2xl px-6 py-3 rounded-lg transition-all duration-300 ${
-                    location.pathname === link.to
-                      ? 'bg-white/20 text-white'
-                      : 'text-white/70 hover:bg-white/10'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ) : link.onClick ? (
-                !isAuthenticated ? (
-                  <button
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      link.onClick();
-                    }}
-                    className="text-2xl px-6 py-3 rounded-lg transition-all duration-300 text-white/70 hover:bg-white/10"
-                  >
-                    {link.label}
-                  </button>
-                ) : null
-              ) : (
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => setIsSubMenuOpen(!isSubMenuOpen)}
-                    className={`text-2xl px-6 py-3 rounded-lg transition-all duration-300 flex items-center gap-2 ${
-                      isSubMenuOpen
+        <div className="fixed inset-0 flex flex-col overflow-y-auto">
+          <div className="flex flex-col items-center pt-16 pb-8 px-4">
+            {navLinks.map((link, index) => (
+              <div key={index} className="flex flex-col items-center my-2 w-full">
+                {link.to ? (
+                  <Link
+                    to={link.to}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`text-xl px-6 py-2 rounded-lg transition-all duration-300 w-full text-center ${
+                      location.pathname === link.to
                         ? 'bg-white/20 text-white'
                         : 'text-white/70 hover:bg-white/10'
                     }`}
                   >
                     {link.label}
-                    <ChevronDown size={20} />
-                  </button>
-                  {isSubMenuOpen && (
-                    <div className="flex flex-col items-center mt-2 gap-2">
-                      {link.subMenu?.map((subLink) => (
-                        <Link
-                          key={subLink.to}
-                          to={subLink.to}
-                          onClick={() => {
-                            setIsMenuOpen(false);
-                            setIsSubMenuOpen(false);
-                          }}
-                          className={`whitespace-nowrap text-xl px-4 py-2 rounded-lg transition-all duration-300 ${
-                            location.pathname === subLink.to
-                              ? 'bg-white/20 text-white'
-                              : 'text-white/70 hover:bg-white/10'
-                          }`}
-                        >
-                          {subLink.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-          {isAuthenticated && (
-            <div className="mt-4">
-              <UserProfileDropdown />
-            </div>
-          )}
+                  </Link>
+                ) : link.onClick ? (
+                  !isAuthenticated ? (
+                    <button
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        link.onClick();
+                      }}
+                      className="text-xl px-6 py-2 rounded-lg transition-all duration-300 text-white/70 hover:bg-white/10 w-full"
+                    >
+                      {link.label}
+                    </button>
+                  ) : null
+                ) : (
+                  <div className="flex flex-col items-center w-full">
+                    <button
+                      onClick={() => setIsSubMenuOpen(!isSubMenuOpen)}
+                      className={`text-xl px-6 py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 w-full ${
+                        isSubMenuOpen
+                          ? 'bg-white/20 text-white'
+                          : 'text-white/70 hover:bg-white/10'
+                      }`}
+                    >
+                      {link.label}
+                      <ChevronDown size={20} />
+                    </button>
+                    {isSubMenuOpen && (
+                      <div className="flex flex-col items-center mt-1 gap-1 w-full">
+                        {link.subMenu?.map((subLink) => (
+                          <Link
+                            key={subLink.to}
+                            to={subLink.to}
+                            onClick={() => {
+                              setIsMenuOpen(false);
+                              setIsSubMenuOpen(false);
+                            }}
+                            className={`whitespace-nowrap text-lg px-4 py-2 rounded-lg transition-all duration-300 w-full text-center ${
+                              location.pathname === subLink.to
+                                ? 'bg-white/20 text-white'
+                                : 'text-white/70 hover:bg-white/10'
+                            }`}
+                          >
+                            {subLink.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+            {isAuthenticated && (
+              <div className="mt-2 w-full flex justify-center">
+                <UserProfileDropdown />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

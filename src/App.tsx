@@ -14,6 +14,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { AuthProvider } from './contexts/AuthContext';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import ScrollToTop from './components/ScrollToTop';
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <ScrollToTop />
                 </div>
               </div>
             </Router>
