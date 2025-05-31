@@ -23,6 +23,7 @@ const AudioPlayer = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { language } = useLanguage();
   const t = translations[language as keyof typeof translations] || translations.en;
+  const audioUrl = '/zen02.mp3';
 
   const toggleMute = () => {
     if (audioRef.current) {
@@ -43,7 +44,7 @@ const AudioPlayer = () => {
     <div className="px-4">
       <audio
         ref={audioRef}
-        src="/zen1-updated.mp3"
+        src={audioUrl}
         loop
         preload="auto"
         muted={true}
