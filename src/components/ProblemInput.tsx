@@ -137,7 +137,7 @@ const ProblemInput: React.FC<ProblemInputProps> = ({
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           placeholder={t.placeholder}
-          className="min-h-28 p-4 text-lg border-0 shadow-lg rounded-2xl bg-[#f5e6d0]/90 backdrop-blur-sm text-gray-800 focus:ring-0 focus:border-0 placeholder:text-gray-600 pr-12"
+          className="min-h-28 p-4 text-base sm:text-lg border-0 shadow-lg rounded-2xl bg-[#f5e6d0]/90 backdrop-blur-sm text-gray-800 focus:ring-0 focus:border-0 placeholder:text-gray-600 placeholder:text-sm sm:placeholder:text-base pr-12"
         />
         <Button
           type="button"
