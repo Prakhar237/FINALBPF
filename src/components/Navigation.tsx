@@ -19,21 +19,21 @@ const Navigation = () => {
     en: {
       home: 'Home',
       workOfFaith: 'Works of Faith',
-      trustedProducts: 'Trusted Products',
+      trustedProducts: 'Trusted E-Products',
       counsellingProgram: 'Trusted Programs',
       ebooks: 'E-books'
     },
     es: {
       home: 'Inicio',
       workOfFaith: 'Obras de Fe',
-      trustedProducts: 'Productos Confiables',
+      trustedProducts: 'Productos Electrónicos Confiables',
       counsellingProgram: 'Programas de Confianza',
       ebooks: 'E-libros'
     },
     fr: {
       home: 'Accueil',
       workOfFaith: 'Œuvres de Foi',
-      trustedProducts: 'Produits de Confiance',
+      trustedProducts: 'Produits Électroniques de Confiance',
       counsellingProgram: 'Programmes de Confiance',
       ebooks: 'E-livres'
     }
@@ -47,8 +47,7 @@ const Navigation = () => {
       label: t.workOfFaith,
       subMenu: [
         { to: '/trusted-products', label: t.trustedProducts },
-        { to: '/counselling-program', label: t.counsellingProgram },
-        { to: '/ebooks', label: t.ebooks }
+        { to: '/counselling-program', label: t.counsellingProgram }
       ]
     },
     { label: 'Create Account', onClick: () => setShowAuthModal(true) }
@@ -170,7 +169,7 @@ const Navigation = () => {
                   <ChevronDown size={16} />
                 </button>
                 <div className="absolute top-full -left-44 mt-1 w-[500px] bg-white/10 backdrop-blur-sm rounded-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                  <div className="grid grid-cols-3 divide-x divide-white/10">
+                  <div className="grid grid-cols-2">
                     {link.subMenu?.map((subLink) => (
                       <div className="px-4 flex justify-center">
                         <Link
