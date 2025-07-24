@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase';
 // Final, clean Product type
 interface Product {
   id: string;
+  title: string; // Added title
   description?: string;
   price: number;
   image_url: string;
@@ -27,7 +28,7 @@ const TrustedProductsContent = () => {
       
       const { data, error } = await supabase
         .from('products')
-        .select('id, description, price, image_url, is_active')
+        .select('id, title, description, price, image_url, is_active') // Added title
         .in('is_active', [true, 'true']); // Filter for active products
 
       if (error) {
@@ -76,7 +77,7 @@ const TrustedProductsContent = () => {
                         className="w-full sm:w-48 h-48 object-cover rounded-xl"
                       />
                       <div className="flex-1 flex flex-col">
-                        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">{product.id}</h3>
+                        <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wider">{product.title}</h3> {/* Show title instead of id */}
                         <p className="text-lg text-gray-800 mt-2 flex-grow">
                           {product.description || 'No description available.'}
                         </p>
