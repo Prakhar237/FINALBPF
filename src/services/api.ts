@@ -14,7 +14,7 @@ export interface ApiResponse {
 
 export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV'): Promise<string[]> => {
   try {
-    const apiKey = 'AIzaSyAmHtoypPMbiuzIiOmpT6fBhAW09DZD_H0';
+    const apiKey = 'AIzaSyA19C0H0YtF9Xf8_5lntVd53JzSQ-1rE1A';
     if (!apiKey) {
       throw new Error('API key not found');
     }
@@ -50,7 +50,7 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
     });
 
     console.log('API Response status:', response.status);
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       console.error('API Error Response:', errorData);
@@ -58,13 +58,13 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
     }
 
     const data = await response.json() as ApiResponse;
-    
+
     // Check if API returned an error
     if (data.error) {
       console.error('API Error:', data.error);
       throw new Error(`API Error: ${data.error.message} (Code: ${data.error.code})`);
     }
-    
+
     // Check if candidates array exists and has content
     if (!data.candidates || !data.candidates.length || !data.candidates[0]?.content?.parts?.[0]?.text) {
       console.log('API Response:', JSON.stringify(data, null, 2));
@@ -72,19 +72,19 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
     }
 
     const content = data.candidates[0].content.parts[0].text;
-    
+
     // Split the response into individual verses
     // This regex looks for numbered items like "1." or "21." at the beginning of a line
     const verses = content.split(/\d+\.\s+/).filter(verse => verse.trim().length > 0);
-    
+
     // Filter out any "*" symbols from the verses
     const cleanedVerses = verses.map(verse => verse.replace(/\*/g, ''));
-    
+
     // If no verses were extracted, try providing the whole content as a single verse
     if (cleanedVerses.length === 0) {
       return [content.replace(/\*/g, '')];
     }
-    
+
     return cleanedVerses;
   } catch (error) {
     console.error('Error fetching verses:', error);

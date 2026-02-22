@@ -1,6 +1,6 @@
 export const API_CONFIG = {
   BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
-  API_KEY: 'AIzaSyAmHtoypPMbiuzIiOmpT6fBhAW09DZD_H0',
+  API_KEY: 'AIzaSyA19C0H0YtF9Xf8_5lntVd53JzSQ-1rE1A',
 };
 
 export const getApiUrl = () => {
