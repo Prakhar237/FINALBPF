@@ -41,7 +41,7 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
     console.log('Sending request to Google Generative Language API...');
     console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
