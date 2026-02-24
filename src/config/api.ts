@@ -15,6 +15,15 @@ export const API_CONFIG = {
   API_KEY: decodeKey(import.meta.env.VITE_GEMINI_API_KEY || ''),
 };
 
+// Safe debug log for production (doesn't leak the key)
+if (import.meta.env.PROD) {
+  console.log('Gemini API Key Presence:', {
+    envVarPresent: !!import.meta.env.VITE_GEMINI_API_KEY,
+    configKeyPresent: !!API_CONFIG.API_KEY,
+    envVarLength: import.meta.env.VITE_GEMINI_API_KEY?.length || 0
+  });
+}
+
 export const getApiUrl = () => {
   return `${API_CONFIG.BASE_URL}?key=${API_CONFIG.API_KEY}`;
 }; 
