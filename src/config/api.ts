@@ -1,8 +1,11 @@
 // Basic obfuscation helper
 const decodeKey = (encoded: string) => {
+  if (!encoded) return '';
   try {
-    return atob(encoded);
+    // Check if we are in a browser environment where atob is available
+    return typeof atob === 'function' ? atob(encoded) : Buffer.from(encoded, 'base64').toString();
   } catch (e) {
+    console.error('Failed to decode API key:', e);
     return '';
   }
 };
