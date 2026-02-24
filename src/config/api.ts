@@ -1,6 +1,15 @@
+// Basic obfuscation helper
+const decodeKey = (encoded: string) => {
+  try {
+    return atob(encoded);
+  } catch (e) {
+    return '';
+  }
+};
+
 export const API_CONFIG = {
   BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
-  API_KEY: 'AIzaSyA19C0H0YtF9Xf8_5lntVd53JzSQ-1rE1A',
+  API_KEY: decodeKey(import.meta.env.VITE_GEMINI_API_KEY || ''),
 };
 
 export const getApiUrl = () => {

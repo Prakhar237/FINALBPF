@@ -1,3 +1,5 @@
+import { API_CONFIG } from '@/config/api';
+
 export interface ApiResponse {
   candidates: {
     content: {
@@ -14,8 +16,7 @@ export interface ApiResponse {
 
 export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV'): Promise<string[]> => {
   try {
-    const apiKey = 'AIzaSyA19C0H0YtF9Xf8_5lntVd53JzSQ-1rE1A';
-    if (!apiKey) {
+    if (!API_CONFIG.API_KEY) {
       throw new Error('API key not found');
     }
 
@@ -41,7 +42,7 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
     console.log('Sending request to Google Generative Language API...');
     console.log('Request body:', JSON.stringify(requestBody, null, 2));
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
+    const response = await fetch(`${API_CONFIG.BASE_URL}?key=${API_CONFIG.API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
