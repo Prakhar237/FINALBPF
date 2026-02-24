@@ -6,6 +6,14 @@ import AuthModal from './AuthModal';
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useAuth } from '@/contexts/AuthContext';
 import UserProfileDropdown from './UserProfileDropdown';
+import { isSupabaseConfigured } from '@/lib/supabase';
+
+interface NavLink {
+  to?: string;
+  label: string;
+  onClick?: () => void;
+  subMenu?: { to: string; label: string }[];
+}
 
 const Navigation = () => {
   const { language } = useLanguage();
@@ -41,17 +49,20 @@ const Navigation = () => {
 
   const t = translations[language as keyof typeof translations] || translations.en;
 
-  const navLinks = [
+  const navLinks: NavLink[] = [
     { to: '/', label: t.home },
-    { 
+    {
       label: t.workOfFaith,
       subMenu: [
         { to: '/trusted-products', label: t.trustedProducts },
         { to: '/counselling-program', label: t.counsellingProgram }
       ]
-    },
-    { label: 'Create Account', onClick: () => setShowAuthModal(true) }
+    }
   ];
+
+  if (isSupabaseConfigured && !isAuthenticated) {
+    navLinks.push({ label: 'Create Account', onClick: () => setShowAuthModal(true) });
+  }
 
   return (
     <nav className="relative">
@@ -66,9 +77,8 @@ const Navigation = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40 transition-all duration-300 ${
-          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
+        className={`md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40 transition-all duration-300 ${isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+          }`}
       >
         <div className="fixed inset-0 flex flex-col overflow-y-auto">
           <div className="flex flex-col items-center pt-16 pb-8 px-4">
@@ -78,11 +88,10 @@ const Navigation = () => {
                   <Link
                     to={link.to}
                     onClick={() => setIsMenuOpen(false)}
-                    className={`text-xl px-6 py-2 rounded-lg transition-all duration-300 w-full text-center ${
-                      location.pathname === link.to
+                    className={`text-xl px-6 py-2 rounded-lg transition-all duration-300 w-full text-center ${location.pathname === link.to
                         ? 'bg-white/20 text-white'
                         : 'text-white/70 hover:bg-white/10'
-                    }`}
+                      }`}
                   >
                     {link.label}
                   </Link>
@@ -91,7 +100,7 @@ const Navigation = () => {
                     <button
                       onClick={() => {
                         setIsMenuOpen(false);
-                        link.onClick();
+                        link.onClick?.();
                       }}
                       className="text-xl px-6 py-2 rounded-lg transition-all duration-300 text-white/70 hover:bg-white/10 w-full"
                     >
@@ -102,11 +111,10 @@ const Navigation = () => {
                   <div className="flex flex-col items-center w-full">
                     <button
                       onClick={() => setIsSubMenuOpen(!isSubMenuOpen)}
-                      className={`text-xl px-6 py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 w-full ${
-                        isSubMenuOpen
+                      className={`text-xl px-6 py-2 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 w-full ${isSubMenuOpen
                           ? 'bg-white/20 text-white'
                           : 'text-white/70 hover:bg-white/10'
-                      }`}
+                        }`}
                     >
                       {link.label}
                       <ChevronDown size={20} />
@@ -121,11 +129,10 @@ const Navigation = () => {
                               setIsMenuOpen(false);
                               setIsSubMenuOpen(false);
                             }}
-                            className={`whitespace-nowrap text-lg px-4 py-2 rounded-lg transition-all duration-300 w-full text-center ${
-                              location.pathname === subLink.to
+                            className={`whitespace-nowrap text-lg px-4 py-2 rounded-lg transition-all duration-300 w-full text-center ${location.pathname === subLink.to
                                 ? 'bg-white/20 text-white'
                                 : 'text-white/70 hover:bg-white/10'
-                            }`}
+                              }`}
                           >
                             {subLink.label}
                           </Link>
@@ -159,11 +166,10 @@ const Navigation = () => {
             ) : link.subMenu ? (
               <div className="relative group">
                 <button
-                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-1 ${
-                    location.pathname === '/trusted-products' || location.pathname === '/counselling-program'
+                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-1 ${location.pathname === '/trusted-products' || location.pathname === '/counselling-program'
                       ? 'bg-white/20 text-white'
                       : 'text-white/70 hover:bg-white/10'
-                  }`}
+                    }`}
                 >
                   {link.label}
                   <ChevronDown size={16} />
@@ -171,13 +177,11 @@ const Navigation = () => {
                 <div className="absolute top-full -left-44 mt-1 w-[500px] bg-white/10 backdrop-blur-sm rounded-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                   <div className="grid grid-cols-2">
                     {link.subMenu?.map((subLink) => (
-                      <div className="px-4 flex justify-center">
+                      <div className="px-4 flex justify-center" key={subLink.to}>
                         <Link
-                          key={subLink.to}
                           to={subLink.to}
-                          className={`block w-[200px] text-center whitespace-nowrap py-2 text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 ${
-                            location.pathname === subLink.to ? 'bg-white/20 text-white' : ''
-                          }`}
+                          className={`block w-[200px] text-center whitespace-nowrap py-2 text-white/70 hover:text-white hover:bg-white/20 transition-all duration-300 ${location.pathname === subLink.to ? 'bg-white/20 text-white' : ''
+                            }`}
                         >
                           {subLink.label}
                         </Link>
@@ -217,4 +221,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation; 
+export default Navigation;
