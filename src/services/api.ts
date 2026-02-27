@@ -14,13 +14,16 @@ export interface ApiResponse {
   };
 }
 
-export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV'): Promise<string[]> => {
+export const fetchVerses = async (
+  userInput: string,
+  bibleVersion: string = 'KJV',
+  onVerse?: (verse: string) => void
+): Promise<string[]> => {
   try {
     if (!API_CONFIG.API_KEY) {
       throw new Error('API key not found');
     }
 
-    // Map Bible version codes to their full names
     const bibleVersionNames: { [key: string]: string } = {
       'KJV': 'King James Version of the Bible',
       'NIV': 'New International Version of the Bible',
@@ -39,9 +42,6 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
       }]
     };
 
-    console.log('Sending request to Google Generative Language API...');
-    console.log('Request body:', JSON.stringify(requestBody, null, 2));
-
     const response = await fetch(`${API_CONFIG.BASE_URL}?key=${API_CONFIG.API_KEY}`, {
       method: 'POST',
       headers: {
@@ -50,53 +50,76 @@ export const fetchVerses = async (userInput: string, bibleVersion: string = 'KJV
       body: JSON.stringify(requestBody)
     });
 
-    console.log('API Response status:', response.status);
-
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('API Error Response:', errorData);
       throw new Error(`API Error: ${errorData.error?.message || 'Unknown error'} (Status: ${response.status})`);
     }
 
-    const data = await response.json() as ApiResponse;
+    const reader = response.body?.getReader();
+    if (!reader) throw new Error('ReadableStream not supported');
 
-    // Check if API returned an error
-    if (data.error) {
-      console.error('API Error:', data.error);
-      throw new Error(`API Error: ${data.error.message} (Code: ${data.error.code})`);
+    const decoder = new TextDecoder();
+    let accumulatedContent = '';
+    let allVerses: string[] = [];
+    let currentVerseIndex = 1;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      accumulatedContent += chunk;
+
+      // The response is a series of JSON objects in an array: [{"candidates":...}, {"candidates":...}]
+      // But it might come in fragments. We need to parse it carefully.
+      // Gemini streaming format is usually:
+      // [
+      //   {"candidates": [{"content": {"parts": [{"text": "..."}]}} ]},
+      //   {"candidates": [{"content": {"parts": [{"text": "..."}]}} ]}
+      // ]
+
+      // A simple way to handle this is to look for the "text" fields or try to parse the whole thing as it grows.
+      // However, the JSON structure of a stream is often a sequence of objects.
+
+      try {
+        // Try to extract text from the current chunk(s)
+        // This is a bit tricky with raw JSON streaming. 
+        // A more robust way is to use a JSON stream parser, but we can try regex for simple text extraction from the candidates.
+
+        // Match: "text": "..."
+        const textMatches = accumulatedContent.match(/"text":\s*"((?:[^"\\]|\\.)*)"/g);
+        if (textMatches) {
+          let fullText = '';
+          textMatches.forEach(match => {
+            const text = match.match(/"text":\s*"((?:[^"\\]|\\.)*)"/)?.[1];
+            if (text) {
+              // Unescape the string
+              const unescaped = text.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+              fullText += unescaped;
+            }
+          });
+
+          // Now split by verse number and find new ones
+          const parts = fullText.split(/\d+\.\s+/).filter(v => v.trim().length > 0);
+
+          if (parts.length > allVerses.length) {
+            for (let i = allVerses.length; i < parts.length; i++) {
+              const cleanedVerse = parts[i].replace(/\*/g, '').trim();
+              if (cleanedVerse) {
+                allVerses.push(cleanedVerse);
+                if (onVerse) onVerse(cleanedVerse);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing stream chunk:', e);
+      }
     }
 
-    // Check if candidates array exists and has content
-    if (!data.candidates || !data.candidates.length || !data.candidates[0]?.content?.parts?.[0]?.text) {
-      console.log('API Response:', JSON.stringify(data, null, 2));
-      throw new Error('No content received from API');
-    }
-
-    const content = data.candidates[0].content.parts[0].text;
-
-    // Split the response into individual verses
-    // This regex looks for numbered items like "1." or "21." at the beginning of a line
-    const verses = content.split(/\d+\.\s+/).filter(verse => verse.trim().length > 0);
-
-    // Filter out any "*" symbols from the verses
-    const cleanedVerses = verses.map(verse => verse.replace(/\*/g, ''));
-
-    // If no verses were extracted, try providing the whole content as a single verse
-    if (cleanedVerses.length === 0) {
-      return [content.replace(/\*/g, '')];
-    }
-
-    return cleanedVerses;
+    return allVerses;
   } catch (error) {
     console.error('Error fetching verses:', error);
-    // Add more detailed error information
-    if (error instanceof Error) {
-      console.error('Error details:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
-      });
-    }
     throw error;
   }
 };

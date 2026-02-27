@@ -11,7 +11,7 @@ const decodeKey = (encoded: string) => {
 };
 
 export const API_CONFIG = {
-  BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent',
+  BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:streamGenerateContent',
   API_KEY: decodeKey(import.meta.env.VITE_GEMINI_API_KEY || ''),
 };
 

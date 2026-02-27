@@ -39,7 +39,7 @@ const IndexContent = () => {
   const { toast } = useToast();
   const { language, setLanguage } = useLanguage();
   const isMobile = useIsMobile();
-  
+
   useEffect(() => {
     setTaglineIndex(0);
     const timer = setTimeout(() => {
@@ -56,24 +56,36 @@ const IndexContent = () => {
 
   const handleSubmit = async () => {
     if (!userInput.trim()) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+    setVerses([]); // Clear previous verses
+
     try {
-      const prompt = language === 'en' 
-        ? userInput 
+      const prompt = language === 'en'
+        ? userInput
         : `${userInput} - generate in ${language === 'es' ? 'Spanish' : 'French'}`;
-      
-      const verses = await fetchVerses(prompt, bibleVersion);
-      setVerses(verses);
-      
-      setTimeout(() => {
-        window.scrollTo({
-          top: document.getElementById('results-section')?.offsetTop || 0,
-          behavior: 'smooth'
-        });
-      }, 100);
+
+      let firstVerseReceived = false;
+      const allVerses = await fetchVerses(prompt, bibleVersion, (newVerse) => {
+        setVerses(prev => [...prev, newVerse]);
+
+        if (!firstVerseReceived) {
+          firstVerseReceived = true;
+          setTimeout(() => {
+            window.scrollTo({
+              top: document.getElementById('results-section')?.offsetTop || 0,
+              behavior: 'smooth'
+            });
+          }, 100);
+        }
+      });
+
+      // Ensure the final set is unified (optional if callback already hit everything)
+      if (allVerses.length > 0) {
+        setVerses(allVerses);
+      }
+
     } catch (error) {
       console.error('Error:', error);
       setError('Failed to fetch verses. Please try again.');
@@ -107,7 +119,7 @@ const IndexContent = () => {
     <div className="min-h-screen flex flex-col">
       <div className="container mx-auto py-8 px-4 flex-grow">
         <Header />
-        
+
         <div className="mt-16 md:mt-24">
           <div className="flex flex-col items-center gap-4 -mt-20">
             {!isMobile && (
@@ -174,19 +186,19 @@ const IndexContent = () => {
             <div className="flex flex-wrap justify-center gap-2 mb-6 text-center min-h-[48px]">
               <StruggleSelector onStruggleSelect={handleStruggleSelect} />
             </div>
-            
+
             <div className="flex justify-center gap-4 mb-6">
-              <BibleVersionSelector 
+              <BibleVersionSelector
                 onVersionChange={handleBibleVersionChange}
                 selectedVersion={bibleVersion}
               />
-              <LanguageSelector 
-                onLanguageChange={handleLanguageChange} 
+              <LanguageSelector
+                onLanguageChange={handleLanguageChange}
                 currentLanguage={language}
               />
             </div>
-            
-            <ProblemInput 
+
+            <ProblemInput
               userInput={userInput}
               setUserInput={setUserInput}
               handleSubmit={handleSubmit}
@@ -194,7 +206,7 @@ const IndexContent = () => {
             />
           </div>
         </div>
-        
+
         {error && (
           <div className="mt-8 p-4 bg-red-50/90 text-red-800 rounded-lg flex items-start gap-3 max-w-2xl mx-auto">
             <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
@@ -204,12 +216,12 @@ const IndexContent = () => {
             </div>
           </div>
         )}
-        
+
         <div id="results-section" className="mt-10">
           <VersesDisplay verses={verses} />
         </div>
       </div>
-      
+
       <LiveUserCounter />
       <Footer />
     </div>
