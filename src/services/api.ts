@@ -70,40 +70,23 @@ export const fetchVerses = async (
       const chunk = decoder.decode(value, { stream: true });
       accumulatedContent += chunk;
 
-      // The response is a series of JSON objects in an array: [{"candidates":...}, {"candidates":...}]
-      // But it might come in fragments. We need to parse it carefully.
-      // Gemini streaming format is usually:
-      // [
-      //   {"candidates": [{"content": {"parts": [{"text": "..."}]}} ]},
-      //   {"candidates": [{"content": {"parts": [{"text": "..."}]}} ]}
-      // ]
-
-      // A simple way to handle this is to look for the "text" fields or try to parse the whole thing as it grows.
-      // However, the JSON structure of a stream is often a sequence of objects.
-
       try {
-        // Try to extract text from the current chunk(s)
-        // This is a bit tricky with raw JSON streaming. 
-        // A more robust way is to use a JSON stream parser, but we can try regex for simple text extraction from the candidates.
-
-        // Match: "text": "..."
         const textMatches = accumulatedContent.match(/"text":\s*"((?:[^"\\]|\\.)*)"/g);
         if (textMatches) {
           let fullText = '';
           textMatches.forEach(match => {
             const text = match.match(/"text":\s*"((?:[^"\\]|\\.)*)"/)?.[1];
             if (text) {
-              // Unescape the string
               const unescaped = text.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
               fullText += unescaped;
             }
           });
 
-          // Now split by verse number and find new ones
           const parts = fullText.split(/\d+\.\s+/).filter(v => v.trim().length > 0);
 
-          if (parts.length > allVerses.length) {
-            for (let i = allVerses.length; i < parts.length; i++) {
+          // Only emit verses that we know are finished (because we found the next number)
+          if (parts.length > allVerses.length + 1) {
+            for (let i = allVerses.length; i < parts.length - 1; i++) {
               const cleanedVerse = parts[i].replace(/\*/g, '').trim();
               if (cleanedVerse) {
                 allVerses.push(cleanedVerse);
@@ -114,6 +97,27 @@ export const fetchVerses = async (
         }
       } catch (e) {
         console.error('Error parsing stream chunk:', e);
+      }
+    }
+
+    // Final pass to emit anything remaining
+    const finalMatches = accumulatedContent.match(/"text":\s*"((?:[^"\\]|\\.)*)"/g);
+    if (finalMatches) {
+      let finalFullText = '';
+      finalMatches.forEach(match => {
+        const text = match.match(/"text":\s*"((?:[^"\\]|\\.)*)"/)?.[1];
+        if (text) {
+          const unescaped = text.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+          finalFullText += unescaped;
+        }
+      });
+      const finalParts = finalFullText.split(/\d+\.\s+/).filter(v => v.trim().length > 0);
+      for (let i = allVerses.length; i < finalParts.length; i++) {
+        const cleanedVerse = finalParts[i].replace(/\*/g, '').trim();
+        if (cleanedVerse) {
+          allVerses.push(cleanedVerse);
+          if (onVerse) onVerse(cleanedVerse);
+        }
       }
     }
 
