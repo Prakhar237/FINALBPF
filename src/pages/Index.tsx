@@ -13,6 +13,7 @@ import { LanguageProvider, useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import StruggleSelector from '@/components/StruggleSelector';
 import { useIsMobile } from '@/hooks/use-mobile';
+import PaymentModal from '@/components/PaymentModal';
 
 const translations = {
   en: {
@@ -36,6 +37,11 @@ const IndexContent = () => {
   const [error, setError] = useState<string | null>(null);
   const [bibleVersion, setBibleVersion] = useState('KJV');
   const [taglineIndex, setTaglineIndex] = useState(0);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [searchCount, setSearchCount] = useState<number>(() => {
+    const saved = localStorage.getItem('bpf_search_count');
+    return saved ? parseInt(saved, 10) : 0;
+  });
   const { toast } = useToast();
   const { language, setLanguage } = useLanguage();
   const isMobile = useIsMobile();
@@ -57,11 +63,20 @@ const IndexContent = () => {
   const handleSubmit = async () => {
     if (!userInput.trim()) return;
 
+    if (searchCount >= 3) {
+      setShowPaymentModal(true);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setVerses([]); // Clear previous verses
 
     try {
+      const newCount = searchCount + 1;
+      setSearchCount(newCount);
+      localStorage.setItem('bpf_search_count', newCount.toString());
+
       const prompt = language === 'en'
         ? userInput
         : `${userInput} - generate in ${language === 'es' ? 'Spanish' : 'French'}`;
@@ -224,6 +239,9 @@ const IndexContent = () => {
 
       <LiveUserCounter />
       <Footer />
+      {showPaymentModal && (
+        <PaymentModal onClose={() => setShowPaymentModal(false)} />
+      )}
     </div>
   );
 };

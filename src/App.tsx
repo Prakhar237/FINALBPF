@@ -15,6 +15,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import ScrollToTop from './components/ScrollToTop';
+import BugReporter from './components/BugReporter';
+
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,7 @@ function App() {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <ScrollToTop />
+                  <BugReporter />
                 </div>
               </div>
             </Router>
