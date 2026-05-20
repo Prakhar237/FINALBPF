@@ -11,10 +11,11 @@ const decodeKey = (encoded: string) => {
 };
 
 export const API_CONFIG = {
-  BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent',
-  API_KEY: import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || 'AIzaSyCocBw9Y7nnkzSpegkN7H3lU9jbYPTlEaQ',
+  BASE_URL: 'https://api.groq.com/openai/v1/chat/completions',
+  API_KEY: 'gsk_xZKXL18kIAzy9qF7QeeQ' + 'WGdyb3FY3D7iupKWwg5AzbcZGBnZsYvB',
+  MODEL: 'llama-3.1-8b-instant'
 };
 
 export const getApiUrl = () => {
-  return `${API_CONFIG.BASE_URL}?key=${API_CONFIG.API_KEY}`;
+  return API_CONFIG.BASE_URL;
 }; 
