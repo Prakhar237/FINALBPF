@@ -11,8 +11,8 @@ const decodeKey = (encoded: string) => {
 };
 
 export const API_CONFIG = {
-  BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:streamGenerateContent',
-  API_KEY: import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || '',
+  BASE_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent',
+  API_KEY: import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.GEMINI_API_KEY || 'AIzaSyCocBw9Y7nnkzSpegkN7H3lU9jbYPTlEaQ',
 };
 
 export const getApiUrl = () => {
