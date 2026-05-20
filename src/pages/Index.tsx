@@ -63,7 +63,10 @@ const IndexContent = () => {
   const handleSubmit = async () => {
     if (!userInput.trim()) return;
 
-    if (searchCount >= 3) {
+    console.log(`Current search count: ${searchCount}. Need >= 2 to trigger paywall (3rd click).`);
+
+    if (searchCount >= 2) {
+      console.log('Paywall triggered!');
       setShowPaymentModal(true);
       return;
     }
@@ -76,6 +79,7 @@ const IndexContent = () => {
       const newCount = searchCount + 1;
       setSearchCount(newCount);
       localStorage.setItem('bpf_search_count', newCount.toString());
+      console.log(`Search count incremented to: ${newCount}`);
 
       const prompt = language === 'en'
         ? userInput
