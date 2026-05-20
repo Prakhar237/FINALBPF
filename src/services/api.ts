@@ -84,7 +84,16 @@ export const fetchVerses = async (
             if (content) {
               accumulatedContent += content;
 
-              const parts = accumulatedContent.split(/\d+\.\s+/).filter(v => v.trim().length > 0);
+              // Parse the verses, handling markdown like **1.** and introductory text
+              let contentToParse = accumulatedContent;
+              const firstVerseIndex = contentToParse.search(/(?:^|\n)\s*\*{0,2}1[\.\)]\*{0,2}\s+/);
+              if (firstVerseIndex !== -1) {
+                contentToParse = contentToParse.substring(firstVerseIndex);
+              } else {
+                contentToParse = '';
+              }
+              
+              const parts = contentToParse.split(/(?:^|\n)\s*\*{0,2}\d+[\.\)]\*{0,2}\s+/).filter(v => v.trim().length > 0);
 
               // Only emit verses that we know are finished
               if (parts.length > allVerses.length + 1) {
@@ -105,7 +114,15 @@ export const fetchVerses = async (
     }
 
     // Final pass to emit anything remaining
-    const finalParts = accumulatedContent.split(/\d+\.\s+/).filter(v => v.trim().length > 0);
+    let finalContent = accumulatedContent;
+    const firstVerseIdx = finalContent.search(/(?:^|\n)\s*\*{0,2}1[\.\)]\*{0,2}\s+/);
+    if (firstVerseIdx !== -1) {
+      finalContent = finalContent.substring(firstVerseIdx);
+    } else {
+      finalContent = '';
+    }
+    
+    const finalParts = finalContent.split(/(?:^|\n)\s*\*{0,2}\d+[\.\)]\*{0,2}\s+/).filter(v => v.trim().length > 0);
     for (let i = allVerses.length; i < finalParts.length; i++) {
       const cleanedVerse = finalParts[i].replace(/\*/g, '').trim();
       if (cleanedVerse) {
