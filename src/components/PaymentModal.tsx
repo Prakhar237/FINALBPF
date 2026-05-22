@@ -43,13 +43,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ onClose }) => {
   };
 
   const modalStyle: React.CSSProperties = {
-    position: isMobile ? 'fixed' : 'absolute',
-    top: isMobile ? '0' : '50%',
-    left: isMobile ? '0' : '50%',
-    transform: isMobile ? 'none' : 'translate(-50%, -50%)',
-    width: isMobile ? '100%' : 'auto',
+    width: '100%',
     maxWidth: '500px',
-    zIndex: 1000,
     backgroundColor: 'white',
     padding: '2.5rem',
     borderRadius: isMobile ? '0' : '1.5rem',
@@ -62,7 +57,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 transition-opacity">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9999] transition-opacity flex items-center justify-center p-0 md:p-4">
       <div style={modalStyle} className="bg-white relative overflow-hidden">
         {/* Soft golden glow in the background */}
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-amber-50 to-transparent pointer-events-none" />
