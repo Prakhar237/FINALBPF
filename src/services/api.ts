@@ -18,7 +18,7 @@ export const fetchVerses = async (
 
     const fullBibleVersion = bibleVersionNames[bibleVersion] || 'King James Version of the Bible';
 
-    const prompt = `Search for the solution of the problem: ${userInput} and give 21 direct answers in the form of Bible verses from the ${fullBibleVersion} that sympathize and provide guidance. For each verse, expand on its meaning with an additional 20-30 words of explanation or context while preserving the original message. Make sure each verse and explanation are clearly connected. Format the response with each verse numbered (1., 2., etc.) and clearly separated.`;
+    const prompt = `Search for the solution of the problem: ${userInput} and give 7 direct answers in the form of Bible verses from the ${fullBibleVersion} that sympathize and provide guidance. For each verse, expand on its meaning with an additional 20-30 words of explanation or context while preserving the original message. Make sure each verse and explanation are clearly connected. Format the response with each verse numbered (1., 2., etc.) and clearly separated.`;
 
     const requestBody = {
       model: GROQ_MODEL,

@@ -8,22 +8,22 @@ const translations = {
   en: {
     title: "Continue Your Journey",
     verse: '"Each of you should give what you have decided in your heart to give, not reluctantly or under compulsion, for God loves a cheerful giver." - 2 Corinthians 9:7',
-    description: "You have reached your 3 free searches. To continue finding peace, inspiration, and guidance through God's word, please consider supporting our ministry with a premium upgrade.",
-    upgrade: "Support & Upgrade (Stripe Coming Soon)",
+    description: "You have reached your 7 free searches. To continue finding peace, inspiration, and guidance through God's word, please consider supporting our ministry with a premium upgrade for just $1.99.",
+    upgrade: "Support & Upgrade for $1.99 (Stripe Coming Soon)",
     close: "Maybe Later"
   },
   es: {
     title: "Continúa Tu Viaje",
     verse: '"Cada uno dé como propuso en su corazón: no con tristeza, ni por necesidad, porque Dios ama al dador alegre." - 2 Corintios 9:7',
-    description: "Has alcanzado tus 3 búsquedas gratuitas. Para continuar encontrando paz, inspiración y guía a través de la palabra de Dios, por favor considera apoyar nuestro ministerio con una actualización premium.",
-    upgrade: "Apoyar y Actualizar (Próximamente)",
+    description: "Has alcanzado tus 7 búsquedas gratuitas. Para continuar encontrando paz, inspiración y guía a través de la palabra de Dios, por favor considera apoyar nuestro ministerio con una actualización premium por solo $1.99.",
+    upgrade: "Apoyar y Actualizar por $1.99 (Próximamente)",
     close: "Quizás Más Tarde"
   },
   fr: {
     title: "Continuez Votre Voyage",
     verse: '"Que chacun donne comme il l\'a résolu en son cœur, sans tristesse ni contrainte; car Dieu aime celui qui donne avec joie." - 2 Corinthiens 9:7',
-    description: "Vous avez atteint vos 3 recherches gratuites. Pour continuer à trouver la paix, l'inspiration et les conseils à travers la parole de Dieu, veuillez envisager de soutenir notre ministère avec une mise à niveau premium.",
-    upgrade: "Soutenir et Améliorer (Bientôt Disponible)",
+    description: "Vous avez atteint vos 7 recherches gratuites. Pour continuer à trouver la paix, l'inspiration et les conseils à travers la parole de Dieu, veuillez envisager de soutenir notre ministère avec une mise à niveau premium pour seulement 1,99 $.",
+    upgrade: "Soutenir et Améliorer pour 1,99 $ (Bientôt Disponible)",
     close: "Peut-être Plus Tard"
   }
 };

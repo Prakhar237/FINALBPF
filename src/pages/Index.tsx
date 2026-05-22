@@ -63,9 +63,9 @@ const IndexContent = () => {
   const handleSubmit = async () => {
     if (!userInput.trim()) return;
 
-    console.log(`Current search count: ${searchCount}. Need >= 2 to trigger paywall (3rd click).`);
+    console.log(`Current search count: ${searchCount}. Need >= 7 to trigger paywall (8th click).`);
 
-    if (searchCount >= 2) {
+    if (searchCount >= 7) {
       console.log('Paywall triggered!');
       setShowPaymentModal(true);
       return;
@@ -206,7 +206,7 @@ const IndexContent = () => {
               <StruggleSelector onStruggleSelect={handleStruggleSelect} />
             </div>
 
-            <div className="flex justify-center gap-4 mb-6">
+            <div className="flex justify-center gap-4 mb-4">
               <BibleVersionSelector
                 onVersionChange={handleBibleVersionChange}
                 selectedVersion={bibleVersion}
@@ -215,6 +215,10 @@ const IndexContent = () => {
                 onLanguageChange={handleLanguageChange}
                 currentLanguage={language}
               />
+            </div>
+
+            <div className="flex justify-center mb-6 opacity-50 text-sm font-medium text-black dark:text-white">
+              {language === 'es' ? 'Búsquedas restantes:' : language === 'fr' ? 'Recherches restantes :' : 'Searches left:'} {Math.max(0, 7 - searchCount)} / 7
             </div>
 
             <ProblemInput
