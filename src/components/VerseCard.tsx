@@ -22,16 +22,39 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBoo
   const { toast } = useToast();
   const isMobile = useIsMobile();
   
-  const hasSeparator = verse.includes(':');
   let reference = '';
-  let text = verse;
-  
-  if (hasSeparator) {
-    const firstColonIndex = verse.indexOf(':');
-    const lastSpaceBeforeReference = verse.lastIndexOf(' ', firstColonIndex - 10) || 0;
-    reference = verse.substring(lastSpaceBeforeReference, firstColonIndex + 3).trim();
-    text = verse.substring(firstColonIndex + 3).trim();
+  let verseText = verse;
+  let commentary = '';
+
+  // Match Bible references like "John 3:16", "1 Corinthians 13:4", "Psalm 23:1-6", etc.
+  // Supports numbered books (1 Corinthians, 2 Timothy) and multi-word books (Song of Solomon)
+  const bibleRefRegex = /^(\d?\s?[A-Za-z]+(?:\s[A-Za-z]+)*\s\d+:\d+(?:-\d+)?)\s*/;
+
+  const lines = verse.split('\n').map(l => l.trim()).filter(Boolean);
+
+  if (lines.length >= 1) {
+    // Line 0: citation
+    const refMatch = lines[0].match(bibleRefRegex);
+    if (refMatch) {
+      reference = refMatch[1].trim();
+    } else {
+      reference = lines[0];
+    }
   }
+
+  if (lines.length >= 2) {
+    // Line 1: verse text — strip surrounding quotes if present
+    verseText = lines[1].replace(/^[""]|[""]$/g, '').trim();
+  }
+
+  if (lines.length >= 3) {
+    // Line 2+: commentary — strip "Commentary:" prefix if present
+    const commentaryLines = lines.slice(2).join(' ');
+    commentary = commentaryLines.replace(/^commentary:\s*/i, '').trim();
+  }
+
+  // Share text uses all three parts
+  const fullShareText = `${reference}\n"${verseText}"\n\n${commentary}\n\nShared from Bible Peace Finder`;
 
   const downloadAsImage = async () => {
     if (!cardRef.current) return;
@@ -106,21 +129,19 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBoo
 
   const handleShare = async (platform: string) => {
     try {
-      const shareText = `${text}\n\n- ${reference}\nShared from Bible Peace Finder`;
-      
       switch (platform) {
         case 'whatsapp':
-          window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+          window.open(`https://wa.me/?text=${encodeURIComponent(fullShareText)}`, '_blank');
           break;
         case 'facebook':
-          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(fullShareText)}`, '_blank');
           break;
         case 'twitter':
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(fullShareText)}&url=${encodeURIComponent(window.location.href)}`, '_blank');
           break;
         case 'instagram':
           // For Instagram, we'll copy the text to clipboard
-          await navigator.clipboard.writeText(shareText);
+          await navigator.clipboard.writeText(fullShareText);
           toast({
             title: "Verse copied to clipboard",
             description: "You can now paste and share it on Instagram",
@@ -150,12 +171,24 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBoo
     >
       <CardContent className="p-6 bg-black/30">
         <div className="flex flex-col">
+          {/* Citation — always shown at top */}
           {reference && (
             <h3 className="font-montserrat font-bold text-lg text-white mb-3">
               {reference}
             </h3>
           )}
-          <p className="font-montserrat font-bold text-white/90 leading-relaxed text-base mb-4">{text}</p>
+
+          {/* Verse text — italic quote style */}
+          <p className="font-montserrat italic text-white/95 leading-relaxed text-base mb-3">
+            &ldquo;{verseText}&rdquo;
+          </p>
+
+          {/* Commentary — lighter muted style below */}
+          {commentary && (
+            <p className="font-montserrat text-sm text-white/70 leading-relaxed mb-4">
+              {commentary}
+            </p>
+          )}
           
           <div className="flex flex-wrap justify-end gap-2 mt-auto">
             <Button
@@ -207,7 +240,7 @@ const VerseCard: React.FC<VerseCardProps> = ({ verse, index, isBookmarked, onBoo
               </Button>
             </div>
 
-            <SpeakButton text={text} />
+            <SpeakButton text={verseText} />
 
             <Button
               variant="ghost"

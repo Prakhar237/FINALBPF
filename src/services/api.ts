@@ -18,7 +18,20 @@ export const fetchVerses = async (
 
     const fullBibleVersion = bibleVersionNames[bibleVersion] || 'King James Version of the Bible';
 
-    const prompt = `Search for the solution of the problem: ${userInput} and give 7 direct answers in the form of Bible verses from the ${fullBibleVersion} that sympathize and provide guidance. For each verse, expand on its meaning with an additional 20-30 words of explanation or context while preserving the original message. Make sure each verse and explanation are clearly connected. Format the response with each verse numbered (1., 2., etc.) and clearly separated.`;
+    const prompt = `Search for the solution of the problem: ${userInput} and give 7 Bible verses from the ${fullBibleVersion} that relate to this situation and provide peace and guidance.
+
+Format EACH verse EXACTLY like this — three lines in this exact order, with no extra labels or headers:
+
+1. Book Chapter:Verse
+"Exact verse text from the Bible"
+Commentary: 20-30 word explanation of how this verse relates to the situation.
+
+Rules:
+- Line 1 must be ONLY the citation (e.g. John 3:16, 1 Corinthians 13:4, Psalm 23:1)
+- Line 2 must be the exact Bible verse text in double quotes
+- Line 3 must start with "Commentary:" followed by the explanation
+- Number each verse (1. 2. 3. etc.)
+- Do not add any intro text before verse 1`;
 
     const requestBody = {
       model: GROQ_MODEL,

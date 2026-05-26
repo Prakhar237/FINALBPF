@@ -111,7 +111,7 @@ const VersesDisplay: React.FC<VersesDisplayProps> = ({ verses }) => {
       <div className="bg-white/60 p-6 md:p-8 rounded-xl shadow-md backdrop-blur-sm">
         <div ref={contentRef} className="space-y-6">
           <div className="text-center text-lg font-montserrat font-bold text-white mb-6">
-            Here are your 21 Bible Verses that sympathise with your situation and provide you guidance
+            Here are 7 Bible Verses that relate to your specific situation and provide you with Peace & Guidance
           </div>
           {displayVerses.length > 0 ? (
             displayVerses.map((verse, i) => (
