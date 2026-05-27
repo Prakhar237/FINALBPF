@@ -91,8 +91,8 @@ const VersesDisplay: React.FC<VersesDisplayProps> = ({ verses }) => {
 
   if (verses.length === 0) return null;
 
-  // Always skip the first verse and display the rest
-  const displayVerses = verses.slice(1);
+  // Display all verses returned by the API
+  const displayVerses = verses;
 
   return (
     <div className="w-full max-w-3xl mx-auto mt-10 px-4">
